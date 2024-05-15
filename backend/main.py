@@ -8,7 +8,7 @@
 '''
 
 from fastapi import FastAPI, Request, HTTPException, Depends
-from sqlalchemy import create_engine, Column, Integer, String, Float, select, cast
+from sqlalchemy import create_engine, Column, Integer, String, Float, select, cast, Date
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from fastapi.middleware.cors import CORSMiddleware
@@ -37,13 +37,45 @@ Base = declarative_base()
 
 class Nutrition(Base):
     __tablename__ = 'integrated_food_nutrition_information'
-    # Should be a text-like field (String)
     food_cd = Column(String, primary_key=True, index=True)
     food_nm = Column(String)  # String corresponds to TEXT in PostgreSQL
-    # Make sure this is supposed to be a Float and the DB also says so
-    energy = Column(String)
-    prot = Column(Float)    # Same as above
-    chole = Column(Float)   # Same as above
+    energy = Column(String)  # 영양성분함량기준량
+    nut_con_srtr_qua = Column(Float)  # 에너지(kcal)
+    water = Column(Float)  # 수분(g)
+    prot = Column(Float)  # 단백질(g)
+    fatce = Column(Float)  # 지방(g)
+    ash = Column(Float)  # 회분(g)
+    chocdf = Column(Float)  # 탄수화물(g)
+    sugar = Column(Float)  # 당류(g)
+    fibtg = Column(Float)  # 식이섬유(g)
+    ca = Column(Float)  # 칼슘(mg)
+    fe = Column(Float)  # 철(mg)
+    p = Column(Float)  # 인(mg)
+    k = Column(Float)  # 칼륨(mg)
+    nat = Column(Float)  # 나트륨(mg)
+    vita_rae = Column(Float)  # 비타민 A(μg RAE)
+    retinol = Column(Float)  # 레티놀(μg)
+    cartb = Column(Float)  # 베타카로틴(μg)
+    thia = Column(Float)  # 티아민(mg)
+    ribf = Column(Float)  # 리보플라빈(mg)
+    nia = Column(Float)  # 니아신(mg)
+    vitc = Column(Float)  # 비타민 C(mg)
+    vitd = Column(Float)  # 비타민 D(μg)
+    chole = Column(Float)  # 콜레스테롤(mg)
+    fasat = Column(Float)  # 포화지방산(g)
+    fatrn = Column(Float)  # 트랜스지방산(g)
+    refuse = Column(Float)  # 폐기율(%)
+    src_cd = Column(String)  # 출처코드
+    src_nm = Column(String)  # 출처명
+    food_size = Column(String)  # 식품중량
+    impt_yn = Column(String)  # 수입여부
+    coo_cd = Column(String)  # 원산지국코드
+    coo_nm = Column(String)  # 원산지국명
+    company_nm = Column(String)  # 업체명
+    data_prod_cd = Column(String)  # 데이터생성방법코드
+    data_prod_nm = Column(String)  # 데이터생성방법명
+    crt_ymd = Column(Date)  # 데이터생성일자
+    crtr_ymd = Column(Date)  # 데이터기준일자
 
 
 Base.metadata.create_all(bind=engine)
@@ -68,8 +100,42 @@ def read_nutrition(food_name: str, db: Session = Depends(get_db)):
             {
                 "food_nm": result.Nutrition.food_nm,
                 "energy": result.Nutrition.energy,
+                "nut_con_srtr_qua": result.Nutrition.nut_con_srtr_qua,
+                "water": result.Nutrition.water,
                 "prot": result.Nutrition.prot,
-                "chole": result.Nutrition.chole
+                "fatce": result.Nutrition.fatce,
+                "ash": result.Nutrition.ash,
+                "chocdf": result.Nutrition.chocdf,
+                "sugar": result.Nutrition.sugar,
+                "fibtg": result.Nutrition.fibtg,
+                "ca": result.Nutrition.ca,
+                "fe": result.Nutrition.fe,
+                "p": result.Nutrition.p,
+                "k": result.Nutrition.k,
+                "nat": result.Nutrition.nat,
+                "vita_rae": result.Nutrition.vita_rae,
+                "retinol": result.Nutrition.retinol,
+                "cartb": result.Nutrition.cartb,
+                "thia": result.Nutrition.thia,
+                "ribf": result.Nutrition.ribf,
+                "nia": result.Nutrition.nia,
+                "vitc": result.Nutrition.vitc,
+                "vitd": result.Nutrition.vitd,
+                "chole": result.Nutrition.chole,
+                "fasat": result.Nutrition.fasat,
+                "fatrn": result.Nutrition.fatrn,
+                "refuse": result.Nutrition.refuse,
+                "src_cd": result.Nutrition.src_cd,
+                "src_nm": result.Nutrition.src_nm,
+                "food_size": result.Nutrition.food_size,
+                "impt_yn": result.Nutrition.impt_yn,
+                "coo_cd": result.Nutrition.coo_cd,
+                "coo_nm": result.Nutrition.coo_nm,
+                "company_nm": result.Nutrition.company_nm,
+                "data_prod_cd": result.Nutrition.data_prod_cd,
+                "data_prod_nm": result.Nutrition.data_prod_nm,
+                "crt_ymd": result.Nutrition.crt_ymd,
+                "crtr_ymd": result.Nutrition.crtr_ymd
             } for result in results
         ]
     else:

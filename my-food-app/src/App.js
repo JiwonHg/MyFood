@@ -1,32 +1,24 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import './App.css'; // CSS 파일 임포트
 
 function App() {
-  const [foodCd, setFoodCd] = useState('');
-  const [nutritionData, setNutritionData] = useState(null);
+  const [foodName, setFoodName] = useState('');
+  const [nutritionData, setNutritionData] = useState([]);
   const [error, setError] = useState('');
 
   const fetchNutritionData = async () => {
-    setError(''); // Clear previous errors
-    setNutritionData(null); // Clear previous data
+    setError('');
+    setNutritionData([]);
     try {
-      const response = await axios.get(`http://localhost:5050/nutrition/${foodCd}`);
-      console.log("console log:", response.data);  // Log the response data to the console
-      setNutritionData(response.data);
-
-      if (response && response.data) {
+      const response = await axios.get(`http://localhost:5050/nutrition/${foodName}`);
+      if (response.data) {
         setNutritionData(response.data);
-        console.log("Fetched data:", response.data);  // Log the response data to the console
       } else {
         throw new Error('Received empty data');
       }
-
-      console.log("console Food name:", nutritionData.food_nm);
-      console.log("console Energy:", nutritionData.energy);
-      console.log("console Protein:", nutritionData.prot);
-      console.log("console Cholesterol:", nutritionData.chole);
     } catch (err) {
-      setError('Failed to fetch data. Please check the food code.');
+      setError('Failed to fetch data. Please check the food name.');
       console.error(err);
     }
   };
@@ -38,30 +30,42 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Nutrition Information Viewer</h1>
+      <h1>주의성분 필터 식품 조회 서비스</h1>
       <form onSubmit={handleSubmit}>
         <label>
-          Food Code:
+          제품명
           <input
             type="text"
-            value={foodCd}
-            onChange={(e) => setFoodCd(e.target.value)}
-            placeholder="Enter food code"
+            value={foodName}
+            onChange={(e) => setFoodName(e.target.value)}
+            placeholder="Enter food name"
+            style={{ marginLeft: '20px', marginRight: '20px' }} // 스타일 적용
           />
         </label>
-        <button type="submit">Fetch Nutrition</button>
+        <button type="submit">조회</button>
       </form>
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      {nutritionData ? (
-        <div>
-          <h2>Food Name: {nutritionData}</h2>  {/* Access food_nm only here */}
-          <ul>
-            <li>Energy: {nutritionData.energy}</li>
-            <li>Protein: {nutritionData.prot}</li>
-            <li>Cholesterol: {nutritionData.chole}</li>
-            {/* Add other nutrition fields as needed */}
-          </ul>
-        </div>
+      {nutritionData.length > 0 ? (
+        <table border="1">
+          <thead>
+            <tr>
+              <th>Food Name</th>
+              <th>Energy</th>
+              <th>Protein</th>
+              <th>Cholesterol</th>
+            </tr>
+          </thead>
+          <tbody>
+            {nutritionData.map((item, index) => (
+              <tr key={index}>
+                <td>{item.food_nm}</td>
+                <td>{item.energy} kcal</td>
+                <td>{item.prot} g</td>
+                <td>{item.chole} mg</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       ) : (
         <p>No nutrition data to display.</p>
       )}

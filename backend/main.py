@@ -57,20 +57,23 @@ def get_db():
         db.close()
 
 
-@app.get("/nutrition/{food_cd}")
-async def read_nutrition(food_cd: str, db: Session = Depends(get_db)):
-    try:
-        # Example of casting, adjust based on actual needs
-        query = select([Nutrition.food_nm]).where(
-            Nutrition.food_cd == food_cd)
-        result = db.execute(query).scalars().first()
-        if result is None:
-            raise HTTPException(
-                status_code=404, detail="Nutrition data not found")
-        return result
-    except Exception as e:
-        print(f"Error: {e}")  # This will print any error that occurs
-        raise HTTPException(status_code=500, detail=str(e))
+@app.get("/nutrition/{food_name}", response_model=list)
+def read_nutrition(food_name: str, db: Session = Depends(get_db)):
+    food_name = f"%{food_name}%"  # 입력받은 제품명 양 옆에 %를 추가하여 LIKE 검색을 위한 준비
+    statement = select(Nutrition).where(Nutrition.food_nm.like(food_name))
+    results = db.execute(statement).all()
+    print(results)
+    if results:
+        return [
+            {
+                "food_nm": result.Nutrition.food_nm,
+                "energy": result.Nutrition.energy,
+                "prot": result.Nutrition.prot,
+                "chole": result.Nutrition.chole
+            } for result in results
+        ]
+    else:
+        raise HTTPException(status_code=404, detail="Food not found")
 
 
 @app.get("/")

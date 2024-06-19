@@ -5,15 +5,19 @@ import './App.css'; // CSS 파일 임포트
 function App() {
   const [foodName, setFoodName] = useState('');
   const [nutritionData, setNutritionData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [error, setError] = useState('');
+  const [filterCholesterol, setFilterCholesterol] = useState(false);
 
   const fetchNutritionData = async () => {
     setError('');
     setNutritionData([]);
+    setFilteredData([]);
     try {
       const response = await axios.get(`http://localhost:5050/nutrition/${foodName}`);
       if (response.data) {
         setNutritionData(response.data);
+        applyFilter(response.data, filterCholesterol);
       } else {
         throw new Error('Received empty data');
       }
@@ -23,9 +27,23 @@ function App() {
     }
   };
 
+  const applyFilter = (data, filter) => {
+    if (filter) {
+      setFilteredData(data.filter(item => item.chole === 0));
+    } else {
+      setFilteredData(data);
+    }
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     fetchNutritionData();
+  };
+
+  const handleFilterChange = (event) => {
+    const { checked } = event.target;
+    setFilterCholesterol(checked);
+    applyFilter(nutritionData, checked);
   };
 
   return (
@@ -39,97 +57,54 @@ function App() {
             value={foodName}
             onChange={(e) => setFoodName(e.target.value)}
             placeholder="Enter food name"
-            style={{ marginLeft: '20px', marginRight: '20px' }} // 스타일 적용
           />
         </label>
         <button type="submit">조회</button>
       </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {nutritionData.length > 0 ? (
-        <table border="1">
+      <label style={{ display: 'block', margin: '20px 0' }}>
+        <input
+          type="checkbox"
+          checked={filterCholesterol}
+          onChange={handleFilterChange}
+        />
+        콜레스테롤 함량이 0인 항목만 보기
+      </label>
+      {error && <p className="error">{error}</p>}
+      {filteredData.length > 0 ? (
+        <table>
           <thead>
             <tr>
-              <th>foodNm</th>
-              <th>energy</th>
-              <th>nutConSrtrQua</th>
-              <th>water</th>
-              <th>prot</th>
-              <th>fatce</th>
-              <th>ash</th>
-              <th>chocdf</th>
-              <th>sugar</th>
-              <th>fibtg</th>
-              <th>ca</th>
-              <th>fe</th>
-              <th>p</th>
-              <th>k</th>
-              <th>nat</th>
-              <th>vitaRae</th>
-              <th>retinol</th>
-              <th>cartb</th>
-              <th>thia</th>
-              <th>ribf</th>
-              <th>nia</th>
-              <th>vitc</th>
-              <th>vitd</th>
-              <th>chole</th>
-              <th>fasat</th>
-              <th>fatrn</th>
-              <th>refuse</th>
-              <th>srcCd</th>
-              <th>srcNm</th>
-              <th>foodSize</th>
-              <th>imptYn</th>
-              <th>cooCd</th>
-              <th>cooNm</th>
-              <th>companyNm</th>
-              <th>dataProdCd</th>
-              <th>dataProdNm</th>
-              <th>crtYmd</th>
-              <th>crtrYmd</th>
+              <th rowSpan="2">제품명</th>
+              <th colSpan="5">주의성분</th>
+              <th rowSpan="2">칼로리(100g당)</th>
+              <th colSpan="3">탄단지(비중)</th>
+              <th rowSpan="2">상세성분</th>
+            </tr>
+            <tr>
+              <th>콜레스테롤(mg)</th>
+              <th>당류(g)</th>
+              <th>나트륨(mg)</th>
+              <th>포화지방산(g)</th>
+              <th>트랜스지방산(g)</th>
+              <th>탄수화물(g)</th>
+              <th>단백질(g)</th>
+              <th>지방(g)</th>
             </tr>
           </thead>
           <tbody>
-            {nutritionData.map((item, index) => (
+            {filteredData.map((item, index) => (
               <tr key={index}>
                 <td>{item.food_nm}</td>
-                <td>{item.energy} kcal</td>
-                <td>{item.nut_con_srtr_qua} g</td>
-                <td>{item.water} g</td>
-                <td>{item.prot} g</td>
-                <td>{item.fatce} g</td>
-                <td>{item.ash} g</td>
-                <td>{item.chocdf} g</td>
-                <td>{item.sugar} g</td>
-                <td>{item.fibtg} g</td>
-                <td>{item.ca} mg</td>
-                <td>{item.fe} mg</td>
-                <td>{item.p} mg</td>
-                <td>{item.k} mg</td>
-                <td>{item.nat} mg</td>
-                <td>{item.vita_rae} μg</td>
-                <td>{item.retinol} μg</td>
-                <td>{item.cartb} μg</td>
-                <td>{item.thia} mg</td>
-                <td>{item.ribf} mg</td>
-                <td>{item.nia} mg</td>
-                <td>{item.vitc} mg</td>
-                <td>{item.vitd} μg</td>
-                <td>{item.chole} mg</td>
-                <td>{item.fasat} g</td>
-                <td>{item.fatrn} g</td>
-                <td>{item.refuse} %</td>
-                <td>{item.src_cd}</td>
-                <td>{item.src_nm}</td>
-                <td>{item.food_size} g</td>
-                <td>{item.impt_yn}</td>
-                <td>{item.coo_cd}</td>
-                <td>{item.coo_nm}</td>
-                <td>{item.company_nm}</td>
-                <td>{item.data_prod_cd}</td>
-                <td>{item.data_prod_nm}</td>
-                <td>{item.crt_ymd}</td>
-                <td>{item.crtr_ymd}</td>
+                <td className="right-align">{item.chole}</td>
+                <td className="right-align">{item.sugar}</td>
+                <td className="right-align">{item.nat}</td>
+                <td className="right-align">{item.fasat}</td>
+                <td className="right-align">{item.fatrn}</td>
+                <td className="right-align">{item.nut_con_srtr_qua}</td>
+                <td className="right-align">{item.chocdf}</td>
+                <td className="right-align">{item.prot}</td>
+                <td className="right-align">{item.fatce}</td>
+                <td>아이콘</td>
               </tr>
             ))}
           </tbody>

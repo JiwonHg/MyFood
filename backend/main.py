@@ -1,7 +1,6 @@
 '''
     aa84f714c1ca487d9375
     conda install conda-forge::fastapi
-    conda install conda-forge::uvicorn
     conda install conda-forge::sqlalchemy
     conda install -c conda-forge psycopg2
 
@@ -21,7 +20,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     # Specifies which origins should be allowed to make requests
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://43.203.254.73:3000"],
     allow_credentials=True,
     allow_methods=["*"],  # Allows all methods
     allow_headers=["*"],  # Allows all headers

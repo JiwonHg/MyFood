@@ -20,7 +20,8 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     # Specifies which origins should be allowed to make requests
-    allow_origins=["http://43.203.254.73:3000", "https://www.hggrateful.com"],
+    allow_origins=["http://localhost:3000",
+                   "https://hggrateful.com", "https://www.hggrateful.com"],
     allow_credentials=True,
     allow_methods=["*"],  # Allows all methods
     allow_headers=["*"],  # Allows all headers

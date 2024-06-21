@@ -19,11 +19,11 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    # Specifies which origins should be allowed to make requests
-    allow_origins=[""],
+    allow_origins=["http://localhost:3000",
+                   "https://hggrateful.com", "https://www.hggrateful.com"],
     allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Database setup
@@ -139,6 +139,17 @@ def read_nutrition(food_name: str, db: Session = Depends(get_db)):
         ]
     else:
         raise HTTPException(status_code=404, detail="Food not found")
+
+
+@app.get("/api/nutrition/{food_name}")
+async def get_nutrition(food_name: str):
+    session = SessionLocal()
+    nutrition_data = session.query(Nutrition).filter(
+        Nutrition.food_nm.like(f'%{food_name}%')).all()
+    session.close()
+    if not nutrition_data:
+        return {"detail": "Not Found"}
+    return nutrition_data
 
 
 @app.get("/")

@@ -7,7 +7,7 @@
 '''
 
 from fastapi import FastAPI, Request, HTTPException, Depends
-from sqlalchemy import create_engine, Column, Integer, String, Float, select, cast, Date
+from sqlalchemy import create_engine, Column, Integer, String, Float, select, cast, Date, inspect
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from fastapi.middleware.cors import CORSMiddleware
@@ -78,16 +78,20 @@ class Nutrition(Base):
     crtr_ymd = Column(Date)  # 데이터기준일자
 
 
-if not engine.dialect.has_table(engine, "integrated_food_nutrition_information"):
-    Base.metadata.create_all(bind=engine)
-
-
 def get_db():
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
+
+
+@app.on_event("startup")
+def startup_event():
+    with engine.begin() as conn:  # engine.connect() 대신 engine.begin() 사용
+        inspector = inspect(engine)  # Inspector 객체 생성
+        if not inspector.has_table("integrated_food_nutrition_information"):
+            Base.metadata.create_all(bind=engine)
 
 
 @app.get("/nutrition/{food_name}", response_model=list)

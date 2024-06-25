@@ -27,8 +27,9 @@ app.add_middleware(
 )
 
 # Database setup
+# DATABASE_URL = os.getenv('DATABASE_URL', "postgresql://postgres:hagyeong0922@localhost/myfood_dev")
 DATABASE_URL = os.getenv(
-    'DATABASE_URL', "postgresql://postgres:hagyeong0922@localhost/myfood_dev")
+    'DATABASE_URL', "postgresql://postgres:hagyeong0922@db:5432/myfood_dev")
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()

@@ -78,7 +78,8 @@ class Nutrition(Base):
     crtr_ymd = Column(Date)  # 데이터기준일자
 
 
-Base.metadata.create_all(bind=engine)
+if not engine.dialect.has_table(engine, "integrated_food_nutrition_information"):
+    Base.metadata.create_all(bind=engine)
 
 
 def get_db():

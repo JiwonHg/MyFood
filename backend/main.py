@@ -3,7 +3,8 @@
     conda install conda-forge::fastapi
     conda install conda-forge::sqlalchemy
     conda install -c conda-forge psycopg2
-
+    uvicorn main:app --host 0.0.0.0 --port 5050 --reload
+    gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app --bind 0.0.0.0:5050
 '''
 
 from fastapi import FastAPI, Request, HTTPException, Depends
@@ -27,9 +28,10 @@ app.add_middleware(
 )
 
 # Database setup
-# DATABASE_URL = os.getenv('DATABASE_URL', "postgresql://postgres:hagyeong0922@localhost/myfood_dev")
 DATABASE_URL = os.getenv(
-    'DATABASE_URL', "postgresql://postgres:hagyeong0922@db:5432/myfood_dev")
+    'DATABASE_URL', "postgresql://postgres:hagyeong0922@localhost/myfood_dev")
+# DATABASE_URL = os.getenv(
+#     'DATABASE_URL', "postgresql://postgres:hagyeong0922@193.122.99.128:5432/myfood_dev")
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
@@ -84,14 +86,6 @@ def get_db():
         yield db
     finally:
         db.close()
-
-
-@app.on_event("startup")
-def startup_event():
-    with engine.begin() as conn:  # engine.connect() 대신 engine.begin() 사용
-        inspector = inspect(engine)  # Inspector 객체 생성
-        if not inspector.has_table("integrated_food_nutrition_information"):
-            Base.metadata.create_all(bind=engine)
 
 
 @app.get("/nutrition/{food_name}", response_model=list)

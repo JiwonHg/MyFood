@@ -4,26 +4,17 @@ channels:
   - defaults
 dependencies:
   - python=3.9
+  - fastapi
   - uvicorn
-  - ujson
-  - tk
-  - sqlalchemy
-  - readline
-  - pydantic-core
-  - psycopg2
-  - orjson
-  - openssl
-  - ncurses
-  - markupsafe
-  - libzlib
-  - libsqlite
-  - libpq
-  - libffi
-  - libexpat
-  - libedit
-  - libcxx
-  - krb5
   - gunicorn
-  - greenlet
-  - ca-certificates
-  - bzip2
+  - sqlalchemy
+  - psycopg2
+  - email-validator
+  - orjson
+  - pydantic
+  - typer
+  - httpx
+  - jinja2
+  - click
+  - pip
+  - setuptools

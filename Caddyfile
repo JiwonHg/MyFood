@@ -1,0 +1,20 @@
+{
+    email neige0729@naver.com
+}
+
+hggrateful.com, www.hggrateful.com {
+    root * /app/build
+    file_server
+    encode gzip
+    try_files {path} /index.html
+
+    reverse_proxy /api/* http://backend:5050
+}
+
+http://hggrateful.com {
+    redir https://hggrateful.com{uri}
+}
+
+http://www.hggrateful.com {
+    redir https://www.hggrateful.com{uri}
+}

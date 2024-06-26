@@ -14,7 +14,7 @@ function App() {
     setNutritionData([]);
     setFilteredData([]);
     try {
-      const response = await axios.get(`https://www.hggrateful.com/api/nutrition/${foodName}`);
+      const response = await axios.get(`http://my-food-backend:5050/api/nutrition/${foodName}`);
       if (response.data) {
         setNutritionData(response.data);
         applyFilter(response.data, filterCholesterol);

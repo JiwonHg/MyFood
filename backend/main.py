@@ -20,8 +20,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000",
-                   "https://hggrateful.com", "https://www.hggrateful.com"],
+    allow_origins=["*"],  # 모든 도메인에서의 접근을 허용
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

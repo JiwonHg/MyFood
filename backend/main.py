@@ -29,9 +29,7 @@ app.add_middleware(
 
 # Database setup
 DATABASE_URL = os.getenv(
-    'DATABASE_URL', "postgresql://postgres:hagyeong0922@localhost/myfood_dev")
-# DATABASE_URL = os.getenv(
-#     'DATABASE_URL', "postgresql://postgres:hagyeong0922@193.122.99.128:5432/myfood_dev")
+    'DATABASE_URL', "postgresql://postgres:hagyeong0922@15.165.192.210:5432/myfood_dev")
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
@@ -92,8 +90,9 @@ def get_db():
 def read_nutrition(food_name: str, db: Session = Depends(get_db)):
     food_name = f"%{food_name}%"  # 입력받은 제품명 양 옆에 %를 추가하여 LIKE 검색을 위한 준비
     statement = select(Nutrition).where(Nutrition.food_nm.like(food_name))
+    print(f"Executing query: {statement}")
     results = db.execute(statement).all()
-    print(results)
+    print(f"Query results: {results}")
     if results:
         return [
             {

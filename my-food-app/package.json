@@ -20,6 +20,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "format": "prettier --write ."
   },
+  "proxy": "http://my-food-backend:5050",
   "eslintConfig": {
     "extends": [
       "react-app",

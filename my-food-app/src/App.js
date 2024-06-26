@@ -14,7 +14,7 @@ function App() {
     setNutritionData([]);
     setFilteredData([]);
     try {
-      const response = await axios.get(`http://my-food-backend:5050/nutrition/${foodName}`);
+      const response = await axios.get(`/nutrition/${foodName}`);
       if (response.data) {
         setNutritionData(response.data);
         applyFilter(response.data, filterCholesterol);

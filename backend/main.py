@@ -87,67 +87,60 @@ def get_db():
 
 @app.get("/nutrition/{food_name}", response_model=list)
 def read_nutrition(food_name: str, db: Session = Depends(get_db)):
-    food_name = f"%{food_name}%"  # 입력받은 제품명 양 옆에 %를 추가하여 LIKE 검색을 위한 준비
-    statement = select(Nutrition).where(Nutrition.food_nm.like(food_name))
-    print(f"Executing query: {statement}")
-    results = db.execute(statement).all()
-    print(f"Query results: {results}")
-    if results:
+    food_name = f"%{food_name}%"
+    try:
+        statement = select(Nutrition).where(Nutrition.food_nm.like(food_name))
+        results = db.execute(statement).scalars().all()
+
+        if not results:
+            raise HTTPException(status_code=404, detail="Food not found")
+
         return [
             {
-                "food_nm": result.Nutrition.food_nm,
-                "energy": result.Nutrition.energy,
-                "nut_con_srtr_qua": result.Nutrition.nut_con_srtr_qua,
-                "water": result.Nutrition.water,
-                "prot": result.Nutrition.prot,
-                "fatce": result.Nutrition.fatce,
-                "ash": result.Nutrition.ash,
-                "chocdf": result.Nutrition.chocdf,
-                "sugar": result.Nutrition.sugar,
-                "fibtg": result.Nutrition.fibtg,
-                "ca": result.Nutrition.ca,
-                "fe": result.Nutrition.fe,
-                "p": result.Nutrition.p,
-                "k": result.Nutrition.k,
-                "nat": result.Nutrition.nat,
-                "vita_rae": result.Nutrition.vita_rae,
-                "retinol": result.Nutrition.retinol,
-                "cartb": result.Nutrition.cartb,
-                "thia": result.Nutrition.thia,
-                "ribf": result.Nutrition.ribf,
-                "nia": result.Nutrition.nia,
-                "vitc": result.Nutrition.vitc,
-                "vitd": result.Nutrition.vitd,
-                "chole": result.Nutrition.chole,
-                "fasat": result.Nutrition.fasat,
-                "fatrn": result.Nutrition.fatrn,
-                "refuse": result.Nutrition.refuse,
-                "src_cd": result.Nutrition.src_cd,
-                "src_nm": result.Nutrition.src_nm,
-                "food_size": result.Nutrition.food_size,
-                "impt_yn": result.Nutrition.impt_yn,
-                "coo_cd": result.Nutrition.coo_cd,
-                "coo_nm": result.Nutrition.coo_nm,
-                "company_nm": result.Nutrition.company_nm,
-                "data_prod_cd": result.Nutrition.data_prod_cd,
-                "data_prod_nm": result.Nutrition.data_prod_nm,
-                "crt_ymd": result.Nutrition.crt_ymd,
-                "crtr_ymd": result.Nutrition.crtr_ymd
+                "food_nm": result.food_nm,
+                "energy": result.energy,
+                "nut_con_srtr_qua": result.nut_con_srtr_qua,
+                "water": result.water,
+                "prot": result.prot,
+                "fatce": result.fatce,
+                "ash": result.ash,
+                "chocdf": result.chocdf,
+                "sugar": result.sugar,
+                "fibtg": result.fibtg,
+                "ca": result.ca,
+                "fe": result.fe,
+                "p": result.p,
+                "k": result.k,
+                "nat": result.nat,
+                "vita_rae": result.vita_rae,
+                "retinol": result.retinol,
+                "cartb": result.cartb,
+                "thia": result.thia,
+                "ribf": result.ribf,
+                "nia": result.nia,
+                "vitc": result.vitc,
+                "vitd": result.vitd,
+                "chole": result.chole,
+                "fasat": result.fasat,
+                "fatrn": result.fatrn,
+                "refuse": result.refuse,
+                "src_cd": result.src_cd,
+                "src_nm": result.src_nm,
+                "food_size": result.food_size,
+                "impt_yn": result.impt_yn,
+                "coo_cd": result.coo_cd,
+                "coo_nm": result.coo_nm,
+                "company_nm": result.company_nm,
+                "data_prod_cd": result.data_prod_cd,
+                "data_prod_nm": result.data_prod_nm,
+                "crt_ymd": result.crt_ymd,
+                "crtr_ymd": result.crtr_ymd
             } for result in results
         ]
-    else:
-        raise HTTPException(status_code=404, detail="Food not found")
-
-
-@app.get("/api/nutrition/{food_name}")
-async def get_nutrition(food_name: str):
-    session = SessionLocal()
-    nutrition_data = session.query(Nutrition).filter(
-        Nutrition.food_nm.like(f'%{food_name}%')).all()
-    session.close()
-    if not nutrition_data:
-        return {"detail": "Not Found"}
-    return nutrition_data
+    except Exception as e:
+        # 예외 발생 시 500 에러 대신 구체적인 오류 메시지와 함께 500 에러 반환
+        raise HTTPException(
+            status_code=500, detail=f"Internal Server Error: {str(e)}")
 
 
 @app.get("/")

@@ -10,21 +10,21 @@ function App() {
   const [filterCholesterol, setFilterCholesterol] = useState(false);
 
   const fetchNutritionData = async () => {
-    setError('');
-    setNutritionData([]);
-    setFilteredData([]);
-    try {
-      const response = await axios.get('/api/nutrition/${encodeURIComponent(foodName)}');
-      if (response.data) {
-        setNutritionData(response.data);
-        applyFilter(response.data, filterCholesterol);
-      } else {
-        throw new Error('Received empty data');
+      setError('');
+      setNutritionData([]);
+      setFilteredData([]);
+      try {
+          const response = await axios.get(`/api/nutrition/${encodeURIComponent(foodName)}`);
+          if (response.data) {
+              setNutritionData(response.data);
+              applyFilter(response.data, filterCholesterol);
+          } else {
+              throw new Error('Received empty data');
+          }
+      } catch (err) {
+          setError('Failed to fetch data. Please check the food name!');
+          console.error(err);
       }
-    } catch (err) {
-      setError('Failed to fetch data. Please check the food name.');
-      console.error(err);
-    }
   };
 
   const applyFilter = (data, filter) => {

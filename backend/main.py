@@ -85,7 +85,7 @@ def get_db():
         db.close()
 
 
-@app.get("/nutrition/{food_name}", response_model=list)
+@app.get("/api/nutrition/{food_name}", response_model=list)
 def read_nutrition(food_name: str, db: Session = Depends(get_db)):
     food_name = f"%{food_name}%"
     try:
